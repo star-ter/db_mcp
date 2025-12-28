@@ -1,5 +1,6 @@
 import os
 
+from dotenv import load_dotenv
 import psycopg
 from psycopg.rows import dict_row
 
@@ -7,6 +8,7 @@ from fastmcp import FastMCP
 from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
 from starlette.responses import JSONResponse
 
+load_dotenv()
 
 verifier = StaticTokenVerifier(tokens={os.getenv("TOKEN"): {}})
 
