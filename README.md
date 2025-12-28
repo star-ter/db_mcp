@@ -8,15 +8,14 @@ PostgreSQL SQL문을 실행하는 MCP 서버입니다.
 
 ```bash
 POSTGRES_DSN=postgresql://user:password@host:5432/dbname
-# 또는
-DATABASE_URL=postgresql://user:password@host:5432/dbname
+TOKEN=your_mcp_token
 ```
 
 ## 실행
 
 ```bash
 uv sync
-uv run python main.py
+uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 ## MCP Tool

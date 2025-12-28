@@ -3,9 +3,13 @@ import os
 import psycopg
 from psycopg.rows import dict_row
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
+from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
 
-mcp = FastMCP("db-mcp")
+
+verifier = StaticTokenVerifier(tokens={os.getenv("TOKEN"): {}})
+
+mcp = FastMCP("db-mcp", auth=verifier)
 
 
 def _get_dsn() -> str:
@@ -32,5 +36,4 @@ def execute_sql(sql: str) -> dict:
         return {"error": str(exc)}
 
 
-if __name__ == "__main__":
-    mcp.run()
+app = mcp.http_app()
