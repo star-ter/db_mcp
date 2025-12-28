@@ -10,7 +10,10 @@ from starlette.responses import JSONResponse
 
 load_dotenv()
 
-verifier = StaticTokenVerifier(tokens={os.getenv("TOKEN"): {}})
+verifier = StaticTokenVerifier(tokens={os.getenv("TOKEN"): {
+    "client_id": "openAI",
+    "scopes": [],
+}})
 
 mcp = FastMCP("db-mcp", auth=verifier)
 
