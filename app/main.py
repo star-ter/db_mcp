@@ -19,7 +19,7 @@ verifier = StaticTokenVerifier(
     }
 )
 
-mcp = FastMCP("db-mcp", auth=verifier)
+mcp = FastMCP("db-mcp", auth=verifier, stateless_http=True)
 
 
 def _get_dsn() -> str:
@@ -48,6 +48,7 @@ def execute_sql(sql: dict[str, str]) -> dict:
                 cur.execute(sql)
                 if cur.description:
                     rows = cur.fetchall()
+                    print(rows)
                     return {"rows": rows, "rowcount": cur.rowcount}
                 return {"rows": [], "rowcount": cur.rowcount}
     except Exception as exc:
