@@ -5,6 +5,7 @@ from psycopg.rows import dict_row
 
 from fastmcp import FastMCP
 from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
+from starlette.responses import JSONResponse
 
 
 verifier = StaticTokenVerifier(tokens={os.getenv("TOKEN"): {}})
@@ -17,6 +18,11 @@ def _get_dsn() -> str:
     if not dsn:
         raise RuntimeError("POSTGRES_DSN 환경변수가 필요합니다.")
     return dsn
+
+
+@mcp.custom_route("/health", methods=["GET"])
+async def health_check(request):
+    return JSONResponse({"status": "healthy", "service": "mcp-server"})
 
 
 @mcp.tool
