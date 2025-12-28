@@ -10,10 +10,14 @@ from starlette.responses import JSONResponse
 
 load_dotenv()
 
-verifier = StaticTokenVerifier(tokens={os.getenv("TOKEN"): {
-    "client_id": "openAI",
-    "scopes": [],
-}})
+verifier = StaticTokenVerifier(
+    tokens={
+        os.getenv("TOKEN"): {
+            "client_id": "openAI",
+            "scopes": [],
+        }
+    }
+)
 
 mcp = FastMCP("db-mcp", auth=verifier)
 
@@ -31,8 +35,11 @@ async def health_check(request):
 
 
 @mcp.tool
-def execute_sql(sql: str) -> dict:
+def execute_sql(sql: dict[str, str]) -> dict:
     """PostgreSQL SQL문을 실행하고 결과를 반환합니다."""
+    query = sql.get("sql", "")
+    if not query:
+        return {"error": "sql 필드가 필요합니다."}
     try:
         with psycopg.connect(_get_dsn(), row_factory=dict_row) as conn:
             conn.autocommit = True
