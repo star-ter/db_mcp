@@ -19,7 +19,7 @@ def _get_dsn() -> str:
     return dsn
 
 
-@mcp.tool()
+@mcp.tool
 def execute_sql(sql: str) -> dict:
     """PostgreSQL SQL문을 실행하고 결과를 반환합니다."""
     try:
