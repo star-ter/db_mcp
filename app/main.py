@@ -35,17 +35,16 @@ async def health_check(request):
 
 
 @mcp.tool
-def execute_sql(sql: dict[str, str]) -> dict:
+def execute_sql(sql: str) -> dict:
     """PostgreSQL SQL문을 실행하고 결과를 반환합니다."""
-    query = sql.get("sql", "")
-    if not query:
+    if not sql:
         return {"error": "sql 필드가 필요합니다."}
     try:
         with psycopg.connect(_get_dsn(), row_factory=dict_row) as conn:
             conn.autocommit = True
             with conn.cursor() as cur:
                 cur.execute("SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY")
-                cur.execute(query)
+                cur.execute(sql)
                 if cur.description:
                     rows = cur.fetchall()
                     print(rows)
