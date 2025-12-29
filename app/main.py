@@ -47,7 +47,8 @@ def execute_sql(sql: str) -> dict:
                 cur.execute(sql)
                 if cur.description:
                     rows = cur.fetchall()
-                    print(rows)
+                    if len(rows) > 100:
+                        return {"error": "결과 행 수가 100개를 초과했습니다."}
                     return {"rows": rows, "rowcount": cur.rowcount}
                 return {"rows": [], "rowcount": cur.rowcount}
     except Exception as exc:
