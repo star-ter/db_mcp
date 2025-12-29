@@ -45,7 +45,7 @@ def execute_sql(sql: dict[str, str]) -> dict:
             conn.autocommit = True
             with conn.cursor() as cur:
                 cur.execute("SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY")
-                cur.execute(sql)
+                cur.execute(query)
                 if cur.description:
                     rows = cur.fetchall()
                     print(rows)
