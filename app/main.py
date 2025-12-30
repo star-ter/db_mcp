@@ -68,7 +68,7 @@ def get_area_points(div: str, name: str) -> dict:
                         ST_Y(ST_Transform(ST_SetSRID(ST_MakePoint(x, y), 5179), 4326)) AS lat,
                         ST_X(ST_Transform(ST_SetSRID(ST_MakePoint(x, y), 5179), 4326)) AS lng
                         FROM admin_area_gu
-                        WHERE REPLACE(adm_nm, ' ', '') ILIKE REPLACE($1, ' ', '')
+                        WHERE REPLACE(adm_nm, ' ', '') ILIKE '%%' || REPLACE(%s, ' ', '') || '%%'
                         ORDER BY length(adm_nm) ASC
                         LIMIT 1
                         """,
@@ -81,7 +81,7 @@ def get_area_points(div: str, name: str) -> dict:
                         ST_Y(ST_Transform(ST_SetSRID(ST_MakePoint(x, y), 5179), 4326)) AS lat,
                         ST_X(ST_Transform(ST_SetSRID(ST_MakePoint(x, y), 5179), 4326)) AS lng
                         FROM admin_area_dong
-                        WHERE REPLACE(adm_nm, ' ', '') ILIKE REPLACE($1, ' ', '')
+                        WHERE REPLACE(adm_nm, ' ', '') ILIKE '%%' || REPLACE(%s, ' ', '') || '%%'
                         ORDER BY length(adm_nm) ASC
                         LIMIT 1
                         """,
@@ -94,14 +94,14 @@ def get_area_points(div: str, name: str) -> dict:
                         ST_Y(ST_Transform(ST_SetSRID(ST_MakePoint("XCNTS_VALUE", "YDNTS_VALUE"), 5181), 4326)) AS lat,
                         ST_X(ST_Transform(ST_SetSRID(ST_MakePoint("XCNTS_VALUE", "YDNTS_VALUE"), 5181), 4326)) AS lng
                         FROM area_commercial
-                        WHERE REPLACE("TRDAR_CD_NM", ' ', '') ILIKE REPLACE($1, ' ', '')
+                        WHERE REPLACE("TRDAR_CD_NM", ' ', '') ILIKE '%%' || REPLACE(%s, ' ', '') || '%%'
                         ORDER BY (CASE WHEN "TRDAR_CD_NM" LIKE '%번%' THEN 1 ELSE 0 END) ASC, length("TRDAR_CD_NM") ASC
                         LIMIT 1
                         """,
                         (name,),
                     )
-                rows = cur.fetchall()
-                return {"points": rows}
+                rows = cur.fetchone()
+                return rows
     except Exception as exc:
         return {"error": str(exc)}
 
