@@ -55,4 +55,55 @@ def execute_sql(sql: str) -> dict:
         return {"error": str(exc)}
 
 
+@mcp.tool
+def get_area_points(div: str, name: str) -> dict:
+    """지정된 지역의 x, y 좌표를 반환합니다."""
+    try:
+        with psycopg.connect(_get_dsn(), row_factory=dict_row) as conn:
+            with conn.cursor() as cur:
+                if div == "gu":
+                    cur.execute(
+                        """
+                        SELECT
+                        ST_Y(ST_Transform(ST_SetSRID(ST_MakePoint(x, y), 5179), 4326)) AS lat,
+                        ST_X(ST_Transform(ST_SetSRID(ST_MakePoint(x, y), 5179), 4326)) AS lng
+                        FROM admin_area_gu
+                        WHERE REPLACE(adm_nm, ' ', '') ILIKE REPLACE($1, ' ', '')
+                        ORDER BY length(adm_nm) ASC
+                        LIMIT 1
+                        """,
+                        (name,),
+                    )
+                elif div == "dong":
+                    cur.execute(
+                        """
+                        SELECT
+                        ST_Y(ST_Transform(ST_SetSRID(ST_MakePoint(x, y), 5179), 4326)) AS lat,
+                        ST_X(ST_Transform(ST_SetSRID(ST_MakePoint(x, y), 5179), 4326)) AS lng
+                        FROM admin_area_dong
+                        WHERE REPLACE(adm_nm, ' ', '') ILIKE REPLACE($1, ' ', '')
+                        ORDER BY length(adm_nm) ASC
+                        LIMIT 1
+                        """,
+                        (name,),
+                    )
+                else:
+                    cur.execute(
+                        """
+                        SELECT
+                        ST_Y(ST_Transform(ST_SetSRID(ST_MakePoint("XCNTS_VALUE", "YDNTS_VALUE"), 5181), 4326)) AS lat,
+                        ST_X(ST_Transform(ST_SetSRID(ST_MakePoint("XCNTS_VALUE", "YDNTS_VALUE"), 5181), 4326)) AS lng
+                        FROM area_commercial
+                        WHERE REPLACE("TRDAR_CD_NM", ' ', '') ILIKE REPLACE($1, ' ', '')
+                        ORDER BY (CASE WHEN "TRDAR_CD_NM" LIKE '%번%' THEN 1 ELSE 0 END) ASC, length("TRDAR_CD_NM") ASC
+                        LIMIT 1
+                        """,
+                        (name,),
+                    )
+                rows = cur.fetchall()
+                return {"points": rows}
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
 app = mcp.http_app()
