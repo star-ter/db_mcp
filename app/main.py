@@ -95,7 +95,7 @@ def get_area_points(div: str, name: str) -> dict:
                         ST_X(ST_Transform(ST_SetSRID(ST_MakePoint("XCNTS_VALUE", "YDNTS_VALUE"), 5181), 4326)) AS lng
                         FROM area_commercial
                         WHERE REPLACE("TRDAR_CD_NM", ' ', '') ILIKE '%%' || REPLACE(%s, ' ', '') || '%%'
-                        ORDER BY (CASE WHEN "TRDAR_CD_NM" LIKE '%번%' THEN 1 ELSE 0 END) ASC, length("TRDAR_CD_NM") ASC
+                        ORDER BY length("TRDAR_CD_NM") ASC
                         LIMIT 1
                         """,
                         (name,),
